@@ -1,15 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Merhaba Netlify!</title>
-    <style>
-        body { font-family: sans-serif; display: grid; place-content: left; height: 100vh; margin: 0; }
-        h1 { font-size: 3rem; color: #00C7B7; }
-    </style>
-</head>
+<!-- Try Puter.js instantly with interactive examples in your browser. Run, edit, and experiment with code - no installation or setup required. -->
+
+<html>
 <body>
-    <h1>Merhabalar</h1>
+    <script src="https://js.puter.com/v2/"></script>
+    <script>
+        // Loading ...
+        puter.print(`Loading...`);
+
+        // Chat with GPT-5.5
+        puter.ai.chat(`What is life?`, {
+            model: 'gpt-5.4-nano',
+        }).then(puter.print);
+    </script>
 </body>
 </html>
