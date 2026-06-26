@@ -3,191 +3,245 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Puter AI Chat</title>
-    <style>
-        /* Sohbet ekranının genel görünümü */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .chat-container {
-            width: 100%;
-            max-width: 500px;
-            height: 80vh;
-            background-color: #ffffff;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        .chat-header {
-            background-color: #0078d4;
-            color: white;
-            padding: 15px;
-            text-align: center;
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-        .chat-messages {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        /* Mesaj balonları */
-        .message {
-            max-width: 75%;
-            padding: 10px 15px;
-            border-radius: 18px;
-            line-height: 1.4;
-            word-wrap: break-word;
-        }
-        .user-message {
-            background-color: #0078d4;
-            color: white;
-            align-self: flex-end;
-            border-bottom-right-radius: 2px;
-        }
-        .ai-message {
-            background-color: #e9ecef;
-            color: #333;
-            align-self: flex-start;
-            border-bottom-left-radius: 2px;
-        }
-        .system-message {
-            background-color: transparent;
-            color: #777;
-            align-self: center;
-            font-size: 0.9rem;
-            font-style: italic;
-        }
-        /* Yazı yazma alanı */
-        .chat-input-area {
-            display: flex;
-            border-top: 1px solid #e9ecef;
-            padding: 10px;
-            background-color: #f8f9fa;
-        }
-        .chat-input-area input {
-            flex: 1;
-            border: 1px solid #ced4da;
-            border-radius: 20px;
-            padding: 10px 15px;
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-        .chat-input-area input:focus {
-            border-color: #0078d4;
-        }
-        .chat-input-area button {
-            background-color: #0078d4;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            margin-left: 8px;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.2rem;
-            transition: background-color 0.2s;
-        }
-        .chat-input-area button:hover {
-            background-color: #005a9e;
-        }
-    </style>
+    <title>Türkiye İller Veritabanı - LocalStorage</title>
+    <!-- Tasarımın şık görünmesi için bağımsız Tailwind CSS kullanıyoruz -->
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-50 min-h-screen text-gray-800">
 
-    <div class="chat-container">
-        <div class="chat-header">Puter AI Asistanı</div>
-        <div class="chat-messages" id="chatMessages">
-            <div class="message system-message">Puter.js yüklendi. Konuşmaya başlayabilirsiniz!</div>
-        </div>
-        <div class="chat-input-area">
-            <input type="text" id="userInput" placeholder="Mesajınızı yazın..." autocomplete="off">
-            <button id="sendBtn">➤</button>
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <!-- Başlık -->
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-blue-600 mb-2">Türkiye İller Veritabanı</h1>
+            <p class="text-gray-600">Tarayıcı Yerel Depolaması (LocalStorage) ile tamamen bağımsız veri yönetimi</p>
+            <div id="db-status" class="inline-block mt-4 text-xs font-semibold px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full">
+                Veritabanı yükleniyor...
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Sol Panel: Yeni İl Ekleme ve Veritabanı İşlemleri -->
+            <div class="md:col-span-1 bg-white p-6 rounded-xl shadow-md border border-gray-100 h-fit">
+                <h2 class="text-xl font-bold mb-4 text-gray-700">Veritabanına İl Ekle</h2>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-600 mb-1">Plaka Kodu</label>
+                        <input type="text" id="plakaInput" placeholder="Örn: 34" maxlength="2"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-600 mb-1">İl Adı</label>
+                        <input type="text" id="ilInput" placeholder="Örn: İstanbul"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-blue-500">
+                    </div>
+                    <button onclick="addCity()" class="w-full bg-blue-600 text-white font-bold py-2 rounded-lg hover:bg-blue-700 transition">
+                        Veritabanına Kaydet
+                    </button>
+                </div>
+
+                <hr class="my-6 border-gray-200">
+
+                <h3 class="text-lg font-bold text-red-600 mb-2">Veritabanı Yönetimi</h3>
+                <p class="text-xs text-gray-500 mb-3">Tüm değişiklikleri sıfırlayıp orijinal 81 ili geri getirmek için kullanabilirsiniz.</p>
+                <button onclick="resetDatabase()" class="w-full bg-red-50 text-red-600 border border-red-200 font-bold py-2 rounded-lg hover:bg-red-100 transition">
+                    Veritabanını Sıfırla
+                </button>
+            </div>
+
+            <!-- Sağ Panel: İller Listesi ve Arama -->
+            <div class="md:col-span-2">
+                <!-- Arama Çubuğu -->
+                <div class="mb-6">
+                    <input type="text" id="searchInput" oninput="filterCities()" placeholder="İl adı veya plaka kodu ile ara..." 
+                           class="w-full border border-gray-300 rounded-xl px-4 py-3 shadow-sm outline-none focus:border-blue-500 text-lg">
+                </div>
+
+                <!-- Kartlar (İller) Listesi -->
+                <div id="cities-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Dinamik olarak doldurulacak -->
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Puter.js Kütüphanesi -->
-    <script src="https://js.puter.com/v2/"></script>
     <script>
-        const chatMessages = document.getElementById('chatMessages');
-        const userInput = document.getElementById('userInput');
-        const sendBtn = document.getElementById('sendBtn');
+        // Orijinal 81 İl Listesi
+        const defaultCities = [
+            { plaka: "01", ad: "Adana" }, { plaka: "02", ad: "Adıyaman" }, { plaka: "03", ad: "Afyonkarahisar" },
+            { plaka: "04", ad: "Ağrı" }, { plaka: "05", ad: "Amasya" }, { plaka: "06", ad: "Ankara" },
+            { plaka: "07", ad: "Antalya" }, { plaka: "08", ad: "Artvin" }, { plaka: "09", ad: "Aydın" },
+            { plaka: "10", ad: "Balıkesir" }, { plaka: "11", ad: "Bilecik" }, { plaka: "12", ad: "Bingöl" },
+            { plaka: "13", ad: "Bitlis" }, { plaka: "14", ad: "Bolu" }, { plaka: "15", ad: "Burdur" },
+            { plaka: "16", ad: "Bursa" }, { plaka: "17", ad: "Çanakkale" }, { plaka: "18", ad: "Çankırı" },
+            { plaka: "19", ad: "Çorum" }, { plaka: "20", ad: "Denizli" }, { plaka: "21", ad: "Diyarbakır" },
+            { plaka: "22", ad: "Edirne" }, { plaka: "23", ad: "Elazığ" }, { plaka: "24", ad: "Erzincan" },
+            { plaka: "25", ad: "Erzurum" }, { plaka: "26", ad: "Eskişehir" }, { plaka: "27", ad: "Gaziantep" },
+            { plaka: "28", ad: "Giresun" }, { plaka: "29", ad: "Gümüşhane" }, { plaka: "30", ad: "Hakkari" },
+            { plaka: "31", ad: "Hatay" }, { plaka: "32", ad: "Isparta" }, { plaka: "33", ad: "Mersin" },
+            { plaka: "34", ad: "İstanbul" }, { plaka: "35", ad: "İzmir" }, { plaka: "36", ad: "Kars" },
+            { plaka: "37", ad: "Kastamonu" }, { plaka: "38", ad: "Kayseri" }, { plaka: "39", ad: "Kırklareli" },
+            { plaka: "40", ad: "Kırşehir" }, { plaka: "41", ad: "Kocaeli" }, { plaka: "42", ad: "Konya" },
+            { plaka: "43", ad: "Kütahya" }, { plaka: "44", ad: "Malatya" }, { plaka: "45", ad: "Manisa" },
+            { plaka: "46", ad: "Kahramanmaraş" }, { plaka: "47", ad: "Mardin" }, { plaka: "48", ad: "Muğla" },
+            { plaka: "49", ad: "Muş" }, { plaka: "50", ad: "Nevşehir" }, { plaka: "51", ad: "Niğde" },
+            { plaka: "52", ad: "Ordu" }, { plaka: "53", ad: "Rize" }, { plaka: "54", ad: "Sakarya" },
+            { plaka: "55", ad: "Samsun" }, { plaka: "56", ad: "Siirt" }, { plaka: "57", ad: "Sinop" },
+            { plaka: "58", ad: "Sivas" }, { plaka: "59", ad: "Tekirdağ" }, { plaka: "60", ad: "Tokat" },
+            { plaka: "61", ad: "Trabzon" }, { plaka: "62", ad: "Tunceli" }, { plaka: "63", ad: "Şanlıurfa" },
+            { plaka: "64", ad: "Uşak" }, { plaka: "65", ad: "Van" }, { plaka: "66", ad: "Yozgat" },
+            { plaka: "67", ad: "Zonguldak" }, { plaka: "68", ad: "Aksaray" }, { plaka: "69", ad: "Bayburt" },
+            { plaka: "70", ad: "Karaman" }, { plaka: "71", ad: "Kırıkkale" }, { plaka: "72", ad: "Batman" },
+            { plaka: "73", ad: "Şırnak" }, { plaka: "74", ad: "Bartın" }, { plaka: "75", ad: "Ardahan" },
+            { plaka: "76", ad: "Iğdır" }, { plaka: "77", ad: "Yalova" }, { plaka: "78", ad: "Karabük" },
+            { plaka: "79", ad: "Kilis" }, { plaka: "80", ad: "Osmaniye" }, { plaka: "81", ad: "Düzce" }
+        ];
 
-        // Ekranın içine mesaj ekleme fonksiyonu
-        function appendMessage(text, sender) {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message');
-            
-            if (sender === 'user') {
-                messageDiv.classList.add('user-message');
-            } else if (sender === 'ai') {
-                messageDiv.classList.add('ai-message');
-            } else {
-                messageDiv.classList.add('system-message');
-            }
-            
-            messageDiv.textContent = text;
-            chatMessages.appendChild(messageDiv);
-            
-            // Yeni bir mesaj geldiğinde sohbeti otomatik en aşağı kaydırır
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-            return messageDiv;
-        }
+        let activeCities = [];
 
-        // Mesaj gönderme fonksiyonu
-        async function sendMessage() {
-            const text = userInput.value.trim();
-            if (!text) return; // Boş mesaj atılmasını engeller
+        const dbStatus = document.getElementById('db-status');
+        const citiesGrid = document.getElementById('cities-grid');
 
-            // Kullanıcının yazdığı mesajı ekrana ekle ve kutuyu temizle
-            appendMessage(text, 'user');
-            userInput.value = '';
-
-            // AI düşünürken ekranda geçici bir durum göster
-            const loadingMessage = appendMessage("Yapay zeka yanıt yazıyor...", "system");
-
+        // Tarayıcıdaki veritabanını ilklendirme fonksiyonu
+        function init() {
             try {
-                // Puter AI servisini çağırıyoruz
-                const response = await puter.ai.chat(text, {
-                    model: 'gpt-5.4-nano',
-                });
+                // Tarayıcının LocalStorage hafızasından 'iller_listesi' anahtarına bakıyoruz
+                let storedData = localStorage.getItem('iller_listesi');
 
-                // Düşünüyor yazısını kaldır
-                loadingMessage.remove();
+                // Eğer hafıza boşsa, varsayılan listeyi tarayıcıya kaydediyoruz
+                if (!storedData) {
+                    localStorage.setItem('iller_listesi', JSON.stringify(defaultCities));
+                    storedData = JSON.stringify(defaultCities);
+                }
 
-                // Yapay zekanın yanıtını ekrana ekle
-                appendMessage(response, 'ai');
+                activeCities = JSON.parse(storedData);
+                
+                // Plaka sırasına göre diz
+                activeCities.sort((a, b) => parseInt(a.plaka) - parseInt(b.plaka));
+
+                renderCities(activeCities);
+                
+                dbStatus.innerText = "Yerel Veritabanı Aktif (LocalStorage)";
+                dbStatus.className = "inline-block mt-4 text-xs font-semibold px-3 py-1 bg-green-100 text-green-800 rounded-full";
             } catch (error) {
-                loadingMessage.remove();
-                appendMessage("Bir hata oluştu: " + error.message, "system");
+                console.error("Hata:", error);
+                dbStatus.innerText = "Hata oluştu: " + error.message;
+                dbStatus.className = "inline-block mt-4 text-xs font-semibold px-3 py-1 bg-red-100 text-red-800 rounded-full";
             }
         }
 
-        // Gönder butonuna tıklandığında gönder
-        sendBtn.addEventListener('click', sendMessage);
-
-        // Klavyeden Enter tuşuna basıldığında gönder
-        userInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
+        // Listeyi ekrana çizme fonksiyonu
+        function renderCities(list) {
+            citiesGrid.innerHTML = '';
+            
+            if (list.length === 0) {
+                citiesGrid.innerHTML = `
+                    <div class="col-span-2 text-center py-8 text-gray-500 font-medium">
+                        Aradığınız kriterlere uygun il bulunamadı.
+                    </div>
+                `;
+                return;
             }
-        });
+
+            list.forEach(city => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between hover:border-blue-300 transition";
+                card.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <span class="bg-blue-100 text-blue-800 font-bold px-3 py-1 rounded-lg text-sm">${city.plaka}</span>
+                        <span class="text-gray-800 font-semibold text-lg">${city.ad}</span>
+                    </div>
+                    <button onclick="deleteCity('${city.plaka}')" class="text-red-400 hover:text-red-600 transition text-sm font-semibold">
+                        Sil
+                    </button>
+                `;
+                citiesGrid.appendChild(card);
+            });
+        }
+
+        // Canlı Arama/Filtreleme
+        function filterCities() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const filtered = activeCities.filter(city => 
+                city.ad.toLowerCase().includes(query) || 
+                city.plaka.includes(query)
+            );
+            renderCities(filtered);
+        }
+
+        // Tarayıcı hafızasına yeni şehir ekleme
+        function addCity() {
+            const plakaInput = document.getElementById('plakaInput');
+            const ilInput = document.getElementById('ilInput');
+            
+            let plaka = plakaInput.value.trim();
+            const ad = ilInput.value.trim();
+
+            if (!plaka || !ad) {
+                alert("Lütfen plaka kodunu ve il adını boş bırakmayın.");
+                return;
+            }
+
+            if (isNaN(plaka) || plaka.length > 2) {
+                alert("Lütfen geçerli bir plaka kodu girin (Maksimum 2 haneli bir sayı).");
+                return;
+            }
+
+            // Tek haneli plakaları '01' formatına çeviriyoruz
+            if (plaka.length === 1) {
+                plaka = "0" + plaka;
+            }
+
+            // Aynı plaka kodu var mı kontrolü
+            if (activeCities.some(city => city.plaka === plaka)) {
+                alert(`Plaka kodu ${plaka} olan bir il zaten kayıtlı!`);
+                return;
+            }
+
+            // Yeni ili listeye ekleyip sıralıyoruz
+            activeCities.push({ plaka, ad });
+            activeCities.sort((a, b) => parseInt(a.plaka) - parseInt(b.plaka));
+
+            // Güncel listeyi tarayıcı hafızasına yazıyoruz
+            localStorage.setItem('iller_listesi', JSON.stringify(activeCities));
+            
+            // Temizlik
+            plakaInput.value = '';
+            ilInput.value = '';
+            
+            renderCities(activeCities);
+        }
+
+        // Şehir silme fonksiyonu
+        function deleteCity(plaka) {
+            if (!confirm(`${plaka} plakalı ili silmek istediğinize emin misiniz?`)) {
+                return;
+            }
+
+            // İlgili şehri listeden çıkarıyoruz
+            activeCities = activeCities.filter(city => city.plaka !== plaka);
+
+            // Güncel listeyi tarayıcı hafızasına yazıyoruz
+            localStorage.setItem('iller_listesi', JSON.stringify(activeCities));
+            
+            filterCities();
+        }
+
+        // Veritabanını sıfırlama (Fabrika ayarlarına dönme)
+        function resetDatabase() {
+            if (!confirm("Tüm değişiklikleri silip orijinal 81 ili geri yüklemek istediğinize emin misiniz?")) {
+                return;
+            }
+
+            localStorage.setItem('iller_listesi', JSON.stringify(defaultCities));
+            activeCities = [...defaultCities];
+            
+            document.getElementById('searchInput').value = '';
+            renderCities(activeCities);
+        }
+
+        // Sayfa yüklendiğinde başlat
+        init();
     </script>
 </body>
 </html>
