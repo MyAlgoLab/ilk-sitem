@@ -1,16 +1,96 @@
-<!-- Try Puter.js instantly with interactive examples in your browser. Run, edit, and experiment with code - no installation or setup required. -->
-
-<html>
-<body>
-    <script src="https://js.puter.com/v2/"></script>
-    <script>
-        // Loading ...
-        puter.print(`Loading...`);
-
-        // Chat with GPT-5.5
-        puter.ai.chat(`What is life?`, {
-            model: 'gpt-5.4-nano',
-        }).then(puter.print);
-    </script>
-</body>
-</html>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puter AI Chat</title>
+    <style>
+        /* Sohbet ekranının genel görünümü */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .chat-container {
+            width: 100%;
+            max-width: 500px;
+            height: 80vh;
+            background-color: #ffffff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .chat-header {
+            background-color: #0078d4;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        /* Mesaj balonları */
+        .message {
+            max-width: 75%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+        .user-message {
+            background-color: #0078d4;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+        .ai-message {
+            background-color: #e9ecef;
+            color: #333;
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+        .system-message {
+            background-color: transparent;
+            color: #777;
+            align-self: center;
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+        /* Yazı yazma alanı */
+        .chat-input-area {
+            display: flex;
+            border-top: 1px solid #e9ecef;
+            padding: 10px;
+            background-color: #f8f9fa;
+        }
+        .chat-input-area input {
+            flex: 1;
+            border: 1px solid #ced4da;
+            border-radius: 20px;
+            padding: 10px 15px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .chat-input-area input:focus {
+            border-color: #0078d4;
+        }
+        .chat-input-area button {
+            background-color: #0078d4;
+            color: white;
+            border: none;
+            border-radius: 50%;
