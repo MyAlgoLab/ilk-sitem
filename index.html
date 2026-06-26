@@ -94,3 +94,100 @@
             color: white;
             border: none;
             border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-left: 8px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            transition: background-color 0.2s;
+        }
+        .chat-input-area button:hover {
+            background-color: #005a9e;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        <div class="chat-header">Puter AI Asistanı</div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="message system-message">Puter.js yüklendi. Konuşmaya başlayabilirsiniz!</div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="userInput" placeholder="Mesajınızı yazın..." autocomplete="off">
+            <button id="sendBtn">➤</button>
+        </div>
+    </div>
+
+    <!-- Puter.js Kütüphanesi -->
+    <script src="https://js.puter.com/v2/"></script>
+    <script>
+        const chatMessages = document.getElementById('chatMessages');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        // Ekranın içine mesaj ekleme fonksiyonu
+        function appendMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+            
+            if (sender === 'user') {
+                messageDiv.classList.add('user-message');
+            } else if (sender === 'ai') {
+                messageDiv.classList.add('ai-message');
+            } else {
+                messageDiv.classList.add('system-message');
+            }
+            
+            messageDiv.textContent = text;
+            chatMessages.appendChild(messageDiv);
+            
+            // Yeni bir mesaj geldiğinde sohbeti otomatik en aşağı kaydırır
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            return messageDiv;
+        }
+
+        // Mesaj gönderme fonksiyonu
+        async function sendMessage() {
+            const text = userInput.value.trim();
+            if (!text) return; // Boş mesaj atılmasını engeller
+
+            // Kullanıcının yazdığı mesajı ekrana ekle ve kutuyu temizle
+            appendMessage(text, 'user');
+            userInput.value = '';
+
+            // AI düşünürken ekranda geçici bir durum göster
+            const loadingMessage = appendMessage("Yapay zeka yanıt yazıyor...", "system");
+
+            try {
+                // Puter AI servisini çağırıyoruz
+                const response = await puter.ai.chat(text, {
+                    model: 'gpt-5.4-nano',
+                });
+
+                // Düşünüyor yazısını kaldır
+                loadingMessage.remove();
+
+                // Yapay zekanın yanıtını ekrana ekle
+                appendMessage(response, 'ai');
+            } catch (error) {
+                loadingMessage.remove();
+                appendMessage("Bir hata oluştu: " + error.message, "system");
+            }
+        }
+
+        // Gönder butonuna tıklandığında gönder
+        sendBtn.addEventListener('click', sendMessage);
+
+        // Klavyeden Enter tuşuna basıldığında gönder
+        userInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
