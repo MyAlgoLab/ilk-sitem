@@ -28,6 +28,8 @@ const iller = [
     { plaka: "76", ad: "Iğdır" }, { plaka: "77", ad: "Yalova" }, { plaka: "78", ad: "Karabük" },
     { plaka: "79", ad: "Kilis" }, { plaka: "80", ad: "Osmaniye" }, { plaka: "81", ad: "Düzce" },
     { plaka: "82", ad: "Yapay Zeka İli" }
+,
+    { plaka: "83", ad: "Musul" }
 ];
 
 exports.handler = async function(event, context) {
